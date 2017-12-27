@@ -1,0 +1,15 @@
+@()
+
+@main("User Form") {
+    <h1>Register now!</h1>
+    <form method="POST" action="@routes.UserController.add()">
+        @helper.CSRF.formField
+        <div class="row">
+            <div class="input-field">
+                <input placeholder="" id="name" type="text" class="validate">
+                <label for="name">Last Name</label>
+            </div>
+        </div>
+        <button class="btn grey">Add User</button>
+    </form>
+}

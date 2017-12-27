@@ -1,0 +1,23 @@
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+# PlayFramework
+/bin/
+/db
+.eclipse
+/lib/
+/logs/
+/modules
+/project/project
+/project/target
+/target
+tmp/
+test-result
+server.pid
+*.eml
+/dist/
+.cache
+/.g8

@@ -1,0 +1,22 @@
+@(users: List[db.entity.User])
+
+@main("") {
+    <h1>Current Users</h1>
+
+    <table class="centered striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(user <- users) {
+            <tr>
+                <td>@user.getId()</td>
+                <td>@user.getName()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
