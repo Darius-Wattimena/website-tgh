@@ -1,5 +1,6 @@
 package db;
 
+import play.Logger;
 import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;
@@ -7,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -29,6 +31,18 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
         this.tName = tClass.getSimpleName();
     }
 
+    public T findById(Long id) {
+        try {
+            return supplyAsync(() -> wrap(em ->
+                    typedQuery(em, "SELECT t FROM " + tName + " t WHERE t.id = :id")
+                        .setParameter("id", id)
+                        .getSingleResult()), context).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public T findFirst() {
         try {
             return supplyAsync(() -> wrap(em -> findFirst(em, "SELECT t FROM " + tName + " t")), context).get();
@@ -39,13 +53,13 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
     }
 
     public T findFirstByCriteria(U criteria) {
-        StringBuilder sql = new StringBuilder();
-        criteria.onSelect(sql);
-        sql.append("where 1=1 ");
-        criteria.build(sql);
+        SqlBuilder sqlBuilder = new SqlBuilder(new StringBuilder());
+        criteria.onSelect(sqlBuilder);
+        sqlBuilder.append("where 1=1 ");
+        criteria.build(sqlBuilder);
 
         try {
-            return supplyAsync(() -> wrap(em -> findFirst(em, sql)), context).get();
+            return supplyAsync(() -> wrap(em -> findFirst(em, sqlBuilder)), context).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -62,12 +76,13 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
     }
 
     public List<T> findByCritria(U criteria) {
-        StringBuilder sql = new StringBuilder();
-        criteria.onSelect(sql);
-        sql.append("where 1=1 ");
-        criteria.build(sql);
+        SqlBuilder sqlBuilder = new SqlBuilder(new StringBuilder());
+        criteria.onSelect(sqlBuilder);
+        sqlBuilder.append("where 1=1 ");
+        criteria.build(sqlBuilder);
+        Logger.info(sqlBuilder.getSql());
         try {
-            return supplyAsync(() -> wrap(em -> find(em, sql)), context).get();
+            return supplyAsync(() -> wrap(em -> find(em, sqlBuilder)), context).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
@@ -76,6 +91,7 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
 
     public T save(T entity) {
         try {
+            entity.onSave();
             if (entity.getId() == null) {
                 return create(entity).get();
             } else {
@@ -101,34 +117,39 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
         }), context);
     }
 
-    public int deleteAll() {
-        try {
-            return supplyAsync(() -> wrap(em -> delete(em, "DELETE t FROM " + tName + " t")), context).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return 0;
+    public void deleteByEntity(T entity) {
+        deleteById(entity.getId());
     }
 
-    public int deleteByCriteria(U criteria) {
-        StringBuilder sql = new StringBuilder();
-        criteria.onDelete(sql);
-        sql.append("where 1=1 ");
-        criteria.build(sql);
+    public void deleteById(Long id) {
+        T entity = findById(id);
+        entity.setDeleted(true);
+        save(entity);
+    }
 
-        try {
-            return supplyAsync(() -> wrap(em -> delete(em, sql)), context).get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+    public void deleteAll() {
+        List<T> entities = findAll();
+
+        for (T entity : entities) {
+            entity.setDeleted(true);
+            save(entity);
         }
-        return 0;
+    }
+
+    public void deleteByCriteria(U criteria) {
+        List<T> entities = findByCritria(criteria);
+
+        for (T entity : entities) {
+            entity.setDeleted(true);
+            save(entity);
+        }
     }
 
     private T findFirst(EntityManager em, String sql) {
         return typedQuery(em, sql).getSingleResult();
     }
 
-    private T findFirst(EntityManager em, StringBuilder sql) {
+    private T findFirst(EntityManager em, SqlBuilder sql) {
         return typedQuery(em, sql).getSingleResult();
     }
 
@@ -136,7 +157,7 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
         return typedQuery(em, sql).getResultList();
     }
 
-    private List<T> find(EntityManager em, StringBuilder sql) {
+    private List<T> find(EntityManager em, SqlBuilder sql) {
         return typedQuery(em, sql).getResultList();
     }
 
@@ -144,7 +165,7 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
         return typedQuery(em, sql).executeUpdate();
     }
 
-    private int delete(EntityManager em, StringBuilder sql) {
+    private int delete(EntityManager em, SqlBuilder sql) {
         return typedQuery(em, sql).executeUpdate();
     }
 
@@ -152,8 +173,14 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
         return api.withTransaction(function);
     }
 
-    private TypedQuery<T> typedQuery(EntityManager em, StringBuilder sql) {
-        return typedQuery(em, sql.toString());
+    private TypedQuery<T> typedQuery(EntityManager em, SqlBuilder sql) {
+        TypedQuery<T> tq = em.createQuery(sql.getSql(), tClass);
+
+        for (Map.Entry<String, Object> parameter : sql.getParameters().entrySet()) {
+            tq.setParameter(parameter.getKey(), parameter.getValue());
+        }
+
+        return tq;
     }
 
     private TypedQuery<T> typedQuery(EntityManager em, String sql) {

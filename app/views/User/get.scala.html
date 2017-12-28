@@ -1,20 +1,42 @@
-@(users: List[db.entity.User])
+@import db.entity._
+@(users: List[User], userForm: Form[User])
+@import helper._
 
 @main("") {
     <h1>Current Users</h1>
+
+    <form method="POST" action="@routes.UserController.onSearch()">
+        @CSRF.formField
+        <div class="row">
+            <div class="input-field">
+                @inputText(userForm("username"),
+                '_showConstraints->false,
+                '_label -> Nil,
+                'placeholder -> "Username",
+                'autocomplete->"off",
+                'maxlength -> "100")
+            </div>
+
+            <button class="btn grey">Search</button>
+        </div>
+    </form>
 
     <table class="centered striped">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Name</th>
+                <th>Username</th>
+                <th>Age</th>
+                <th>Created On</th>
             </tr>
         </thead>
         <tbody>
         @for(user <- users) {
             <tr>
                 <td>@user.getId()</td>
-                <td>@user.getName()</td>
+                <td>@user.getUsername()</td>
+                <td>@user.getAge()</td>
+                <td>@user.getCreatedOn().format("dd MMMM yyyy HH:mm:ss z")</td>
             </tr>
         }
         </tbody>

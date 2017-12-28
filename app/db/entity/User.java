@@ -1,20 +1,30 @@
 package db.entity;
 
-import db.Entity;
-
 import javax.persistence.Column;
+import javax.persistence.Entity;
 
-@javax.persistence.Entity
-public class User extends Entity {
+@Entity
+public class User extends db.DateEntity {
 
     @Column
-    private String name;
+    private String username;
 
-    public String getName() {
-        return name;
+    @Column
+    private Integer age;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }

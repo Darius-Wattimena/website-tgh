@@ -1,38 +1,48 @@
 package controllers;
 
+import db.criteria.UserCriteria;
 import db.dao.UserDao;
 import db.entity.User;
 import play.data.Form;
 import play.data.FormFactory;
-import play.mvc.Controller;
 import play.mvc.Result;
 import play.twirl.api.Content;
 
 import javax.inject.Inject;
 import java.util.List;
 
-public class UserController extends Controller {
+public class UserController extends BaseController<User, UserCriteria> {
+
+    private Form<User> userForm;
 
     @Inject
-    private FormFactory ff;
-
-    @Inject
-    private UserDao dao;
+    public UserController(FormFactory ff, UserDao dao) {
+        super(ff, dao);
+    }
 
     public Result index() {
-        return ok(views.html.User.add.render());
+        userForm = ff.form(User.class);
+        return ok(views.html.User.add.render(userForm));
     }
 
     public Result add() {
-        Form<User> userForm = ff.form(User.class);
-        User user = userForm.bindFromRequest().get();
-        dao.save(user);
-        return getAll();
+        onSave(userForm);
+        return redirect("users");
     }
 
     public Result getAll() {
-        List<User> users = dao.findAll();
-        Content html = views.html.User.get.render(users);
+        userForm = ff.form(User.class);
+        List<User> users = onFind();
+        Content html = views.html.User.get.render(users, userForm);
+        return ok(html);
+    }
+
+    public Result onSearch() {
+        User user = userForm.bindFromRequest().get();
+        UserCriteria criteria = new UserCriteria();
+        criteria.setSearchUsername(user.getUsername());
+        List<User> users = dao.findByCritria(criteria);
+        Content html = views.html.User.get.render(users, userForm);
         return ok(html);
     }
 }
