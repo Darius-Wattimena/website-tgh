@@ -14,6 +14,8 @@ libraryDependencies ++= Seq(
   "org.hibernate" % "hibernate-entitymanager" % "5.1.0.Final"
 )
 
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
+
 // Test Database
 libraryDependencies += "com.h2database" % "h2" % "1.4.194"
 

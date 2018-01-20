@@ -23,6 +23,10 @@ public class BaseController<T extends Entity, U extends Criteria> extends Contro
         return dao.findAll();
     }
 
+    void onSave(T entity) {
+        dao.save(entity);
+    }
+
     void onSave(Form<T> form) {
         T entity = form.bindFromRequest().get();
         dao.save(entity);

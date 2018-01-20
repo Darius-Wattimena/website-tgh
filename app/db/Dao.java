@@ -5,6 +5,7 @@ import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +47,15 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
     public T findFirst() {
         try {
             return supplyAsync(() -> wrap(em -> findFirst(em, "SELECT t FROM " + tName + " t")), context).get();
+        } catch (NoResultException e) {
+            return null;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public T findFirstByCriteria(U criteria) {
+    public T findFirstByCriteria(U criteria) throws NoResultException {
         SqlBuilder sqlBuilder = new SqlBuilder(new StringBuilder());
         criteria.onSelect(sqlBuilder);
         sqlBuilder.append("where 1=1 ");
@@ -60,6 +63,8 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
 
         try {
             return supplyAsync(() -> wrap(em -> findFirst(em, sqlBuilder)), context).get();
+        } catch (NoResultException e) {
+            return null;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

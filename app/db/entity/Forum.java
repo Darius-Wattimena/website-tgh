@@ -1,10 +1,12 @@
 package db.entity;
 
+import db.UserEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
-public class Forum extends db.UserEntity {
+public class Forum extends UserEntity {
 
     @Column
     private String name;

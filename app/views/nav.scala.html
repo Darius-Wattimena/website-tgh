@@ -4,9 +4,8 @@
     <div class="nav-wrapper">
         <a href="/" class="brand-logo center">Logo</a>
         <ul class="left hide-on-med-and-down">
-            <li><a href="/user">Add User</a></li>
-            <li><a href="/users">Users</a></li>
-            <li class="active"><a href="">Test</a></li>
+            <li @if(request.path.startsWith("/users")){ class="active" }><a href="/users">User</a></li>
+            <li @if(request.path.startsWith("/login")){ class="active" }><a href="/login">Login</a></li>
         </ul>
     </div>
 </nav>

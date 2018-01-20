@@ -1,12 +1,14 @@
 package db.entity;
 
+import db.UserEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Thread extends db.UserEntity {
+public class Thread extends UserEntity {
 
     @Column
     private String subject;
