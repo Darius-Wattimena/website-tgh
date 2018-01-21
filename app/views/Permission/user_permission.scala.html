@@ -1,0 +1,27 @@
+@import db.entity.User
+@(user: User, permissions : List[String])
+@import helper._
+
+@main("") {
+    <h1>User permissions</h1>
+
+    @if(permissions.isEmpty) {
+    <p>@user.getUsername() has no permissions</p>
+    } else {
+    <table class="centered striped">
+        <thead>
+            <tr>
+                <th>Permission</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for(permission <- permissions) {
+            <tr>
+                <td>@permission</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    }
+}

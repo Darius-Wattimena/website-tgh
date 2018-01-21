@@ -3,6 +3,9 @@ package controllers;
 import db.entity.User;
 import play.mvc.Controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Application extends Controller {
 
     /*public static Result javascriptRoutes() {
@@ -15,6 +18,7 @@ public class Application extends Controller {
     }*/
 
     private static User currentUser;
+    private static List<String> currentUserPermissions = new ArrayList<>();
 
     public static User getCurrentUser() {
         return currentUser;
@@ -22,5 +26,13 @@ public class Application extends Controller {
 
     public static void setCurrentUser(User currentUser) {
         Application.currentUser = currentUser;
+    }
+
+    public static List<String> getCurrentUserPermissions() {
+        return currentUserPermissions;
+    }
+
+    public static void setCurrentUserPermissions(List<String> currentUserPermissions) {
+        Application.currentUserPermissions = currentUserPermissions;
     }
 }

@@ -2,8 +2,9 @@ package db.entity;
 
 import db.DateEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User extends DateEntity {
@@ -19,6 +20,14 @@ public class User extends DateEntity {
 
     @Column
     private Integer age;
+
+    @OneToMany
+    @JoinColumn
+    private List<UserRole> userRoles = new ArrayList<>();
+
+    @OneToMany
+    @JoinColumn
+    private List<UserPermission> userPermissions = new ArrayList<>();
 
     public String getUsername() {
         return username;
@@ -50,5 +59,21 @@ public class User extends DateEntity {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public List<UserPermission> getUserPermissions() {
+        return userPermissions;
+    }
+
+    public void setUserPermissions(List<UserPermission> userPermissions) {
+        this.userPermissions = userPermissions;
+    }
+
+    public List<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 }

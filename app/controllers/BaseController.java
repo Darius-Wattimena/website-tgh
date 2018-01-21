@@ -14,7 +14,7 @@ public class BaseController<T extends Entity, U extends Criteria> extends Contro
     final FormFactory ff;
     final Dao<T, U> dao;
 
-    BaseController(FormFactory ff, Dao<T, U> dao) {
+    public BaseController(FormFactory ff, Dao<T, U> dao) {
         this.ff = ff;
         this.dao = dao;
     }

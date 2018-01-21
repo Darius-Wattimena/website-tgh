@@ -13,6 +13,7 @@ public class SqlBuilder {
 
     public SqlBuilder append(String sql) {
         this.sql.append(sql);
+        this.sql.append(" ");
         return this;
     }
 

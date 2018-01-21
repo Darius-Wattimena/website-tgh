@@ -1,11 +1,47 @@
 @()
 
-<nav class="grey">
+<!--<nav class="grey">
     <div class="nav-wrapper">
-        <a href="/" class="brand-logo center">Logo</a>
+        <a href="/" class="brand-logo center">
+            <img src="@routes.Assets.versioned("images/logo.png")" alt="Logo" height="64">
+        </a>
         <ul class="left hide-on-med-and-down">
             <li @if(request.path.startsWith("/users")){ class="active" }><a href="/users">User</a></li>
             <li @if(request.path.startsWith("/login")){ class="active" }><a href="/login">Login</a></li>
         </ul>
     </div>
-</nav>
+</nav>-->
+
+<!-- mobile nav bar -->
+<div class="title-bar topbar-center-logo-mobile" data-responsive-toggle="topbar-center-logo" data-hide-for="medium">
+    <div class="title-bar-left">
+        <div class="title-bar-title"><img src="https://placehold.it/100x39" alt="" /></div>
+    </div>
+    <div class="title-bar-right">
+        <button class="menu-icon" type="button" data-toggle="topbar-center-logo"></button>
+    </div>
+</div>
+<!-- /mobile nav bar -->
+
+<!-- medium and larger nav bar -->
+<div class="top-bar topbar-center-logo" id="topbar-center-logo">
+    <div class="top-bar-left">
+        <ul class="menu vertical medium-horizontal">
+            <li><a href="/users">User</a></li>
+            <li><a href="#">Test</a></li>
+            <li><a href="#">Test2</a></li>
+        </ul>
+    </div>
+    <div class="top-bar-center">
+        <a href="/">
+            <img class="tgh-logo" src="@routes.Assets.versioned("images/logo_2.png")" alt="Logo">
+        </a>
+    </div>
+    <div class="top-bar-right">
+        <ul class="menu vertical medium-horizontal">
+            <li><a href="/login"><button type="button" class="button hollow topbar-responsive-button">Login</button></a></li>
+            <li><a href="/register"><button type="button" class="button hollow topbar-responsive-button">Register</button></a></li>
+        </ul>
+    </div>
+</div>
+<!-- /medium and larger nav bar -->

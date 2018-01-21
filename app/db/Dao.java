@@ -18,11 +18,11 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public abstract class Dao<T extends Entity, U extends Criteria> {
 
-    private JPAApi api;
-    private DatabaseExecutionContext context;
+    protected JPAApi api;
+    protected DatabaseExecutionContext context;
 
-    private Class<T> tClass;
-    private String tName;
+    protected Class<T> tClass;
+    protected String tName;
 
     @Inject
     public Dao(JPAApi api, DatabaseExecutionContext context, Class<T> tClass) {
@@ -58,7 +58,7 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
     public T findFirstByCriteria(U criteria) throws NoResultException {
         SqlBuilder sqlBuilder = new SqlBuilder(new StringBuilder());
         criteria.onSelect(sqlBuilder);
-        sqlBuilder.append("where 1=1 ");
+        sqlBuilder.append("WHERE 1=1");
         criteria.build(sqlBuilder);
 
         try {
@@ -83,7 +83,7 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
     public List<T> findByCritria(U criteria) {
         SqlBuilder sqlBuilder = new SqlBuilder(new StringBuilder());
         criteria.onSelect(sqlBuilder);
-        sqlBuilder.append("where 1=1 ");
+        sqlBuilder.append("WHERE 1=1");
         criteria.build(sqlBuilder);
         Logger.info(sqlBuilder.getSql());
         try {
@@ -150,35 +150,35 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
         }
     }
 
-    private T findFirst(EntityManager em, String sql) {
+    protected T findFirst(EntityManager em, String sql) {
         return typedQuery(em, sql).getSingleResult();
     }
 
-    private T findFirst(EntityManager em, SqlBuilder sql) {
+    protected T findFirst(EntityManager em, SqlBuilder sql) {
         return typedQuery(em, sql).getSingleResult();
     }
 
-    private List<T> find(EntityManager em, String sql) {
+    protected List<T> find(EntityManager em, String sql) {
         return typedQuery(em, sql).getResultList();
     }
 
-    private List<T> find(EntityManager em, SqlBuilder sql) {
+    protected List<T> find(EntityManager em, SqlBuilder sql) {
         return typedQuery(em, sql).getResultList();
     }
 
-    private int delete(EntityManager em, String sql) {
+    protected int delete(EntityManager em, String sql) {
         return typedQuery(em, sql).executeUpdate();
     }
 
-    private int delete(EntityManager em, SqlBuilder sql) {
+    protected int delete(EntityManager em, SqlBuilder sql) {
         return typedQuery(em, sql).executeUpdate();
     }
 
-    private <S> S wrap(Function<EntityManager, S> function) {
+    protected <S> S wrap(Function<EntityManager, S> function) {
         return api.withTransaction(function);
     }
 
-    private TypedQuery<T> typedQuery(EntityManager em, SqlBuilder sql) {
+    protected TypedQuery<T> typedQuery(EntityManager em, SqlBuilder sql) {
         TypedQuery<T> tq = em.createQuery(sql.getSql(), tClass);
 
         for (Map.Entry<String, Object> parameter : sql.getParameters().entrySet()) {
@@ -188,7 +188,7 @@ public abstract class Dao<T extends Entity, U extends Criteria> {
         return tq;
     }
 
-    private TypedQuery<T> typedQuery(EntityManager em, String sql) {
+    protected TypedQuery<T> typedQuery(EntityManager em, String sql) {
         return em.createQuery(sql, tClass);
     }
 }

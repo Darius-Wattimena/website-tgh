@@ -11,25 +11,22 @@
     <head>
         @* Here's where we render the page title `String`. *@
         <title>@title</title>
-        <!--Import Google Icon Font-->
-        <link href="@routes.Assets.versioned("fonts/icon.css")"  rel="stylesheet">
-        <!--Import materialize.css-->
-        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("css/materialize.min.css")"  media="screen,projection"/>
 
+        <link type="text/css" rel="stylesheet" href="@routes.Assets.versioned("css/foundation.css")"  media="screen,projection"/>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("css/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
     </head>
     <body>
         @nav()
-        <div class="container">
-        @* And here's where we render the `Html` object containing
-         * the page content. *@
-        @content
-
+        <div class="grid-container">
+            <div class="body-info">
+                @content
+            </div>
         </div>
 
-        <script type="text/javascript" src="@routes.Assets.versioned("js/jquery-3.2.1.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.versioned("js/main.js")" ></script>
-        <script type="text/javascript" src="@routes.Assets.versioned("js/materialize.min.js")" ></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("js/vendor/jquery.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("js/vendor/what-input.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("js/vendor/foundation.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("js/main.js")"></script>
     </body>
 </html>

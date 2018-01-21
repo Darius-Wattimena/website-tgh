@@ -1,0 +1,40 @@
+@(userLoginForm: Form[form.UserRegisterForm])
+@import helper._
+
+@main("Register") {
+<h1>Register</h1>
+<form method="POST" action="@routes.UserController.onRegister()">
+    @CSRF.formField
+    <div class="row">
+        <div class="input-field">
+            @inputText(userLoginForm("username"),
+            '_showConstraints->false,
+            '_label -> Nil,
+            'placeholder -> "Username",
+            'autocomplete->"off",
+            'maxlength -> "100")
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field">
+            @inputPassword(userLoginForm("password"),
+            '_showConstraints->false,
+            '_label -> Nil,
+            'placeholder -> "Password",
+            'autocomplete->"off",
+            'maxlength -> "100")
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field">
+            @inputPassword(userLoginForm("confirmPassword"),
+            '_showConstraints->false,
+            '_label -> Nil,
+            'placeholder -> "Confirm Password",
+            'autocomplete->"off",
+            'maxlength -> "100")
+        </div>
+    </div>
+    <button class="btn grey">Register</button>
+</form>
+}

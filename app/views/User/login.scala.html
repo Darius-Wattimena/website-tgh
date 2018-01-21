@@ -3,7 +3,7 @@
 
 @main("Login") {
 <h1>Login</h1>
-<form method="POST" action="@routes.UserController.add()">
+<form method="POST" action="@routes.UserController.onLogin()">
     @CSRF.formField
     <div class="row">
         <div class="input-field">
@@ -17,7 +17,7 @@
     </div>
     <div class="row">
         <div class="input-field">
-            @inputText(userForm("password"),
+            @inputPassword(userForm("password"),
             '_showConstraints->false,
             '_label -> Nil,
             'placeholder -> "Password",

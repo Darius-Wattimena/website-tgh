@@ -15,12 +15,11 @@ public class DateEntity extends Entity {
 
     @Override
     public void onSave() {
+        Date currentDate = new Date();
         if (getId() == null) {
-            createdOn = new Date();
-            modifiedOn = new Date();
-        } else {
-            modifiedOn = new Date();
+            createdOn = currentDate;
         }
+        modifiedOn = currentDate;
     }
 
     public Date getCreatedOn() {

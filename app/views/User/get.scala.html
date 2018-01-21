@@ -44,6 +44,9 @@
                 <td>@user.getSalt()</td>
                 <td>@user.getAge()</td>
                 <td>@user.getCreatedOn().format("dd MMMM yyyy HH:mm:ss z")</td>
+                <td>
+                    <a class="waves-effect btn" href="users/@user.getId()">Permissions</a>
+                </td>
             </tr>
         }
         </tbody>

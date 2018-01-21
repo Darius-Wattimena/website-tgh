@@ -3,6 +3,7 @@ package controllers;
 import db.criteria.UserCriteria;
 import db.dao.UserDao;
 import db.entity.User;
+import form.UserRegisterForm;
 import org.mindrot.jbcrypt.BCrypt;
 import play.data.Form;
 import play.data.FormFactory;
@@ -15,33 +16,14 @@ import java.util.List;
 public class UserController extends BaseController<User, UserCriteria> {
 
     private Form<User> userForm;
+    private Form<UserRegisterForm> userRegisterForm;
+
+    @Inject
+    private PermissionController permissionController;
 
     @Inject
     public UserController(FormFactory ff, UserDao dao) {
         super(ff, dao);
-    }
-
-    public Result index() {
-        userForm = ff.form(User.class);
-        return ok(views.html.User.add.render(userForm));
-    }
-
-    public Result add() {
-        User user = userForm.bindFromRequest().get();
-        UserCriteria criteria = new UserCriteria();
-        criteria.setUsername(user.getUsername());
-
-        if (dao.findFirstByCriteria(criteria) != null) {
-            return index(); // TODO add error already exists
-        }
-
-        String salt = BCrypt.gensalt();
-        String hashedPassword = BCrypt.hashpw(user.getPassword(), salt);
-        user.setPassword(hashedPassword);
-        user.setSalt(salt);
-        dao.save(user);
-
-        return redirect("users");
     }
 
     public Result getAll() {
@@ -60,6 +42,36 @@ public class UserController extends BaseController<User, UserCriteria> {
         return ok(html);
     }
 
+    public Result register() {
+        userRegisterForm = ff.form(UserRegisterForm.class);
+        return ok(views.html.User.register.render(userRegisterForm));
+    }
+
+    public Result onRegister() {
+        UserRegisterForm user = userRegisterForm.bindFromRequest().get();
+        UserCriteria criteria = new UserCriteria();
+        criteria.setUsername(user.getUsername());
+
+        if (dao.findFirstByCriteria(criteria) != null) {
+            return register(); // TODO add error already exists
+        }
+
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            return register();
+        }
+
+        String salt = BCrypt.gensalt();
+        String hashedPassword = BCrypt.hashpw(user.getPassword(), salt);
+
+        User databaseUser = new User();
+        databaseUser.setUsername(user.getUsername());
+        databaseUser.setPassword(hashedPassword);
+        databaseUser.setSalt(salt);
+        onSave(databaseUser);
+
+        return redirect("users");
+    }
+
     public Result login() {
         userForm = ff.form(User.class);
         return ok(views.html.User.login.render(userForm));
@@ -72,7 +84,7 @@ public class UserController extends BaseController<User, UserCriteria> {
         User databaseUser = dao.findFirstByCriteria(criteria);
 
         if (databaseUser == null) {
-            return ok(); // TODO add error message
+            return ok("Error user not found"); // TODO add error message
         }
 
         String password = databaseUser.getPassword();
@@ -81,10 +93,12 @@ public class UserController extends BaseController<User, UserCriteria> {
         String hashedUserInput = BCrypt.hashpw(user.getPassword(), salt);
 
         if (hashedUserInput.equals(password)) {
+            List<String> permissions = permissionController.getPermissions(databaseUser);
             Application.setCurrentUser(databaseUser);
-            return ok(); // TODO redirect to admin panel
+            Application.setCurrentUserPermissions(permissions);
+            return getAll(); // TODO redirect to admin panel
         } else {
-            return ok(); // TODO add error message
+            return ok("Error wrong password"); // TODO add error message
         }
     }
 }

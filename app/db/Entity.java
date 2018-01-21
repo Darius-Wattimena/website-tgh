@@ -1,9 +1,10 @@
 package db;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @MappedSuperclass
-public abstract class Entity {
+public abstract class Entity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
